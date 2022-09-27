@@ -12,6 +12,6 @@ simple Rock paper scissors game
 - [ ] (logging -> framework(decide) to HDD db/web requests/response)
 - [ ] (docker container release)
 
-### frontend: ?
+### frontend: 
 - [ ] Angular
 
