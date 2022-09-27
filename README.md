@@ -2,7 +2,7 @@
 simple Rock paper scissors game
 
 ### used techniques:
-- [ ] spring boot
+- [x] spring boot
 - [ ] JDBC Sqlite for Match-history
     - [ ] paging
     - [ ] spring boot data streaming
