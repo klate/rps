@@ -14,5 +14,4 @@ simple Rock paper scissors game
 
 ### frontend: ?
 - [ ] Angular
-- [ ] JavaFx
 
