@@ -1,6 +1,6 @@
-package com.github.klate.rps.controller.v1;
+package com.github.klate.rps.controller;
 
-import com.github.klate.rps.models.GameResult;
+import com.github.klate.rps.entity.GameResult;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

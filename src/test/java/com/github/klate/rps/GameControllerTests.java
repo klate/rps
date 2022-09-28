@@ -1,6 +1,6 @@
 package com.github.klate.rps;
 
-import com.github.klate.rps.models.GameResult;
+import com.github.klate.rps.entity.GameResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

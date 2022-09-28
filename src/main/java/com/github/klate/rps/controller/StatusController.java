@@ -1,4 +1,4 @@
-package com.github.klate.rps.controller.v1;
+package com.github.klate.rps.controller;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;

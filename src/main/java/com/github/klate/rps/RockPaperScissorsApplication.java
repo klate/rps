@@ -1,7 +1,7 @@
 package com.github.klate.rps;
 
-import com.github.klate.rps.controller.v1.GameController;
-import com.github.klate.rps.controller.v1.StatusController;
+import com.github.klate.rps.controller.GameController;
+import com.github.klate.rps.controller.StatusController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

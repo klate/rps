@@ -1,21 +1,37 @@
-package com.github.klate.rps.models;
+package com.github.klate.rps.entity;
 
 import java.util.Date;
-
-// todo: check if a record makes more sense here
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
 * class, that contains all the information of a played game between the server and a player
 * */
+@Entity
 public class GameResult {
 
-    // TODO: switch to uuid, that's not heap allocated (if possible)
-    private final String uuid;
-    private final char winner; // todo: maybe switch to enums
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+    private final char winner;
     private final String username;
     private final Date date;
     private final char playerChoice;
     private final char computerChoice;
+
+    /**
+     * required by JPI
+     * empty constructor with dummy values
+     * */
+    protected GameResult() {
+        //throw new IllegalStateException("");
+        // TODO: check -> is the exception a good way of replacing the following 3 lines
+        this.winner = this.playerChoice = this.computerChoice = ' ';
+        this.date = null;
+        this.username = null;
+    }
 
     /**
      * creates a new instance, sets the current date and creates a new uuid
@@ -26,8 +42,7 @@ public class GameResult {
      * @param serverChoice the choice in the game of the server
      * */
     public GameResult(char winner, String username, char playerChoice, char serverChoice){
-        this.date = new Date(); // todo -> maybe get as param
-        this.uuid = "new uuid"; // todo -> create uuid here
+        this.date = new Date();
         this.winner = winner;
         this.username = username;
         this.playerChoice = playerChoice;
@@ -38,8 +53,8 @@ public class GameResult {
         return this.winner;
     }
 
-    public String getUuid(){
-        return this.uuid;
+    public long getId(){
+        return this.id;
     }
 
     public String getUsername() {

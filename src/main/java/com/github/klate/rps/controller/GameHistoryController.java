@@ -1,4 +1,4 @@
-package com.github.klate.rps.controller.v1;
+package com.github.klate.rps.controller;
 
 // controller for the game history
 public class GameHistoryController {
