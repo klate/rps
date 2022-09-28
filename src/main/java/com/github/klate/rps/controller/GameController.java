@@ -1,6 +1,9 @@
 package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
+import com.github.klate.rps.repositories.GameResultRepository;
+import com.github.klate.rps.service.GameResultService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Character.*;
@@ -19,6 +23,10 @@ import static java.lang.Character.*;
 @SpringBootApplication
 @RestController
 public class GameController {
+
+    @Autowired
+    private GameResultService gameResultService;
+
 
     // statics -> todo: maybe into own class?
     private static final char rock = 'r';
@@ -41,25 +49,34 @@ public class GameController {
     * @return GameResult-obj, that contains the information about the result of the game
     * */
     @GetMapping("/api/v1/play") // TODO: move api + v1 to class params
-    public GameResult play(@RequestParam(value = "name") String name, @RequestParam(value = "c") char playerChoice) {
+    public CompletableFuture<GameResult> play(@RequestParam(value = "name") String name, @RequestParam(value = "c") char playerChoice) {
 
-        // TODO: add java future api
+        // TODO: make the game processing logic also async
+
+        // execution order
+        // 1. checkChoiceInput
+        // 2. getServerChoice
+        // 3. getWinner
+        // 4. create game result obj
+        // 5. saveGameResult -> do not wait
+        // return game result
+
+
 
         playerChoice = checkChoiceInput(playerChoice);
 
         final char serverChoice = getServerChoice();
         final char winner = getWinner(playerChoice, serverChoice);
 
-        // TODO: add exceptoinhandling and translaten them to HTTP Codes
+        // TODO: add exceptoinhandling and translate them to HTTP Codes
 
         // todo: maybe to heap alloc of properties on other thread and then just use the objects here
         //  -> less heap allocations in response time
         final GameResult resultObj = new GameResult(winner, name, playerChoice, serverChoice);
 
-        // TODO: store resultObj to DB (hist)
-        // TODO: check if java persistance API is useful
+        this.gameResultService.saveGameResult(resultObj);
 
-        return resultObj;
+        return CompletableFuture.completedFuture(resultObj);
     }
 
     /**
