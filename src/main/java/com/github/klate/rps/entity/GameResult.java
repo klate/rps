@@ -1,20 +1,20 @@
 package com.github.klate.rps.entity;
 
 import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
 * class, that contains all the information of a played game between the server and a player
 * */
 @Entity
+@Table(name = "GAME_RESULTS")
 public class GameResult {
 
+    // TODO: Use UUID
+    // TODO: check if pre-generation of objects is possible -> reduces heap allocations
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private int id;
     private final char winner;
     private final String username;
     private final Date date;
