@@ -1,10 +1,8 @@
 package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
-import com.github.klate.rps.repositories.GameResultRepository;
 import com.github.klate.rps.service.GameResultService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,12 +18,14 @@ import static java.lang.Character.*;
 * Controller for the server-side game logic of the server
 * exposes the game endpoint towards the users
 * */
-@SpringBootApplication
+//@SpringBootApplication
 @RestController
 public class GameController {
 
+
+    // the background service for handling the game results
     @Autowired
-    private GameResultService gameResultService;
+    private final GameResultService gameResultService = null;
 
 
     // statics -> todo: maybe into own class?
@@ -48,17 +48,18 @@ public class GameController {
     *
     * @return GameResult-obj, that contains the information about the result of the game
     * */
-    @GetMapping("/api/v1/play") // TODO: move api + v1 to class params
+    @GetMapping("/api/play")
     public CompletableFuture<GameResult> play(@RequestParam(value = "name") String name, @RequestParam(value = "c") char playerChoice) {
 
         // TODO: make the game processing logic also async
+        // non blocking for the main thread
 
         // execution order
         // 1. checkChoiceInput
         // 2. getServerChoice
         // 3. getWinner
         // 4. create game result obj
-        // 5. saveGameResult -> do not wait
+        // 5. saveGameResult -> do not wait -> async
         // return game result
 
 

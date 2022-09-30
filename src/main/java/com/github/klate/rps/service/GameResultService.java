@@ -2,7 +2,7 @@ package com.github.klate.rps.service;
 
 
 import com.github.klate.rps.entity.GameResult;
-import com.github.klate.rps.repositories.GameResultRepository;
+import com.github.klate.rps.repository.GameResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,8 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class GameResultService {
 
+
+    // the jpa repo for the game results
     @Autowired
     private GameResultRepository gameResultRepository;
 
@@ -24,8 +26,9 @@ public class GameResultService {
      * */
     @Async
     public CompletableFuture<GameResult> saveGameResult(GameResult result){
+        // TODO: check if this is really non blocking
         result = gameResultRepository.save(result);
-        return  CompletableFuture.completedFuture(result);
+        return CompletableFuture.completedFuture(result);
     }
 
     /**
@@ -36,7 +39,7 @@ public class GameResultService {
     @Async
     public CompletableFuture<List<GameResult>> getAllGameResults(){
         // TODO: check to use webflux
-        // TODO: add paging
+        // TODO: add paging -> check repo technology first
         List<GameResult> results = gameResultRepository.findAll();
         return CompletableFuture.completedFuture(results);
     }
