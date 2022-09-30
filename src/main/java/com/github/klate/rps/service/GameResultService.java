@@ -7,12 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GameResultService {
-
 
     // the jpa repo for the game results
     @Autowired
@@ -40,8 +41,23 @@ public class GameResultService {
     public CompletableFuture<List<GameResult>> getAllGameResults(){
         // TODO: check to use webflux
         // TODO: add paging -> check repo technology first
-        List<GameResult> results = gameResultRepository.findAll();
+        List<GameResult> results = this.gameResultRepository.findAll();
         return CompletableFuture.completedFuture(results);
+    }
+
+    /**
+     * fetches a GameResult obj from the configured repository with the provided id
+     *
+     * @return a GameResult with the provided id
+     * @throws EntityNotFoundException when the id was not found
+     * */
+    public CompletableFuture<GameResult> getGameResultById(int id) throws EntityNotFoundException {
+        Optional<GameResult> result = this.gameResultRepository.findById(id);
+        if(result.isPresent())
+        {
+            return CompletableFuture.completedFuture(result.get());
+        }
+        else throw new EntityNotFoundException();
     }
 
 

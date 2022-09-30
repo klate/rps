@@ -18,7 +18,6 @@ import static java.lang.Character.*;
 * Controller for the server-side game logic of the server
 * exposes the game endpoint towards the users
 * */
-//@SpringBootApplication
 @RestController
 public class GameController {
 
