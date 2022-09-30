@@ -3,7 +3,7 @@ simple Rock paper scissors game
 
 ### used techniques:
 - [x] spring boot
-- [ ] JDBC Sqlite for Match-history
+- [x] JDBC Sqlite for Match-history
     - [ ] paging or webflux ? -> data stream instead op paging
 - [ ] future api -> full async
 - [ ] JVM + GC optimization (if needed)
