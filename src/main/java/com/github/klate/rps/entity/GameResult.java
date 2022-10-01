@@ -16,7 +16,7 @@ public class GameResult {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private final char winner;
-    private final String username;
+    private final String userName;
     private final Date date;
     private final char playerChoice;
     private final char computerChoice;
@@ -30,7 +30,7 @@ public class GameResult {
         // TODO: check -> is the exception a good way of replacing the following 3 lines
         this.winner = this.playerChoice = this.computerChoice = ' ';
         this.date = null;
-        this.username = null;
+        this.userName = null;
     }
 
     /**
@@ -44,7 +44,7 @@ public class GameResult {
     public GameResult(char winner, String username, char playerChoice, char serverChoice){
         this.date = new Date();
         this.winner = winner;
-        this.username = username;
+        this.userName = username;
         this.playerChoice = playerChoice;
         this.computerChoice = serverChoice;
     }
@@ -57,8 +57,8 @@ public class GameResult {
         return this.id;
     }
 
-    public String getUsername() {
-        return this.username;
+    public String getUserName() {
+        return this.userName;
     }
 
     public Date getDate() {

@@ -21,7 +21,7 @@ public class GameControllerTests {
     public void testPlayGame() throws Exception {
         ResponseEntity<GameResult> response = testRestTemplate.getForEntity("/api/v1/play", GameResult.class, "name=kai", "c=r");
 
-        assertThat(Objects.requireNonNull(response.getBody()).getUsername()).isEqualTo("kai");
+        assertThat(Objects.requireNonNull(response.getBody()).getUserName()).isEqualTo("kai");
     }
 
     // TODO: play 100+ games and check if the distribution of the computer decisions are equal within a threshold

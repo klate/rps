@@ -24,8 +24,11 @@ import static java.lang.Character.*;
 public class GameController {
 
     // the background service for handling the game results
-    @Autowired
-    private final GameResultService gameResultService = null;
+    private final GameResultService gameResultService;
+
+    public GameController(GameResultService gameResultService) {
+        this.gameResultService = gameResultService;
+    }
 
     /**
     * spring endpoint towards the user to play the game rock paper scissors
