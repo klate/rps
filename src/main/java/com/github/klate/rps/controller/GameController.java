@@ -1,6 +1,7 @@
 package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
+import com.github.klate.rps.globals.GameGlobals;
 import com.github.klate.rps.service.GameResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.github.klate.rps.globals.GameGlobals.*;
 import static java.lang.Character.*;
 
 /**
@@ -21,22 +23,9 @@ import static java.lang.Character.*;
 @RestController
 public class GameController {
 
-
     // the background service for handling the game results
     @Autowired
     private final GameResultService gameResultService = null;
-
-
-    // statics -> todo: maybe into own class?
-    private static final char rock = 'r';
-    private static final char paper = 'p';
-    private static final char scissors = 's';
-    private static final char[] validChoices = new char[] { rock, paper, scissors };
-
-    private static final char draw = 'd';
-    private static final char serverWon = 's';
-    private static final char playerWon = 'p';
-
 
     /**
     * spring endpoint towards the user to play the game rock paper scissors
