@@ -1,6 +1,8 @@
 package com.github.klate.rps.exception;
 
 import com.github.klate.rps.globals.ExceptionGlobals;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +21,20 @@ import java.security.InvalidParameterException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // TODO: add logger here
+    // the logger for this class
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    /**
+     * handles the processing of all general exceptions
+     * @return the HTTP response body for this Exception
+     * */
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    String generalExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
+        logger.error(ex.getMessage(), ex);
+        return ex.getMessage();
+    }
 
     /**
      * handles the processing of EntityNotFoundException
@@ -29,6 +44,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     String entityNotFoundHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
+        logger.error(ex.getMessage(), ex);
         return null;
     }
 
@@ -40,6 +56,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidParameterException.class)
     String invalidParameterHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
@@ -51,6 +68,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(IllegalStateException.class)
     String illegalStateHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
