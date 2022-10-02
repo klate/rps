@@ -1,10 +1,11 @@
 package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
-import com.github.klate.rps.globals.GameGlobals;
+import com.github.klate.rps.exception.ExceptionBuilder;
+import com.github.klate.rps.globals.ExceptionGlobals;
 import com.github.klate.rps.service.GameResultService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.github.klate.rps.globals.ExceptionGlobals.*;
 import static com.github.klate.rps.globals.GameGlobals.*;
 import static java.lang.Character.*;
 
@@ -21,6 +23,7 @@ import static java.lang.Character.*;
 * exposes the game endpoint towards the users
 * */
 @RestController
+@RequestMapping("/api")
 public class GameController {
 
     // the background service for handling the game results
@@ -39,8 +42,10 @@ public class GameController {
     *
     * @return GameResult-obj, that contains the information about the result of the game
     * */
-    @GetMapping("/api/play")
-    public CompletableFuture<GameResult> play(@RequestParam(value = "name") String name, @RequestParam(value = "c") char playerChoice) {
+    @GetMapping("/play")
+    public CompletableFuture<GameResult> play(
+        @RequestParam(value = "name") String name, @RequestParam(value = "c") char playerChoice)
+        throws InvalidParameterException, IllegalStateException {
 
         // TODO: make the game processing logic also async
         // non blocking for the main thread
@@ -83,15 +88,14 @@ public class GameController {
             userInput = toLowerCase(userInput);
         }
 
-        // todo: check if the byteCode for for and foreach are the same
-        for (int i = 0; i < validChoices.length; i++) {
-            if (validChoices[i] == userInput){
+        for (char validChoice : validChoices) {
+            if (validChoice == userInput) {
                 return userInput;
             }
         }
 
-        // TODO: replace string manipulation with stringbuilder (in exceptions
-        throw new InvalidParameterException("accepted inputs: " + Arrays.toString(validChoices) +" -- sent: " + userInput);
+        throw new InvalidParameterException(
+                ExceptionBuilder.createMessage(ACCEPTED_INPUTS, validChoices, SENT, userInput));
     }
 
     /**
@@ -112,8 +116,7 @@ public class GameController {
             case 2 -> {
                 return scissors;
             }
-            // TODO: replace string manipulation with stringbuilder (in exceptions
-            default -> throw new IllegalStateException("unknown choice by the server");
+            default -> throw new IllegalStateException(UNKNOWN_SERVER_CHOICE);
         }
     }
 
@@ -132,8 +135,6 @@ public class GameController {
             return draw;
         }
 
-        // TODO: replace string manipulation with stringbuilder (in exceptions) -> less heap allocations
-
         // TODO: check: is there a more elegant way?
         // -> if there is: make multiple versions of this method avalible via dependecy injection
         // -> configurable via v1/v2/vX api routes?
@@ -150,7 +151,8 @@ public class GameController {
                     case scissors -> {
                         return playerWon;
                     }
-                    default -> throw new IllegalStateException("unexpected combination: " + playerChoice + " " + serverChoice);
+                    default -> throw new IllegalStateException(
+                            ExceptionBuilder.createMessage(UNEXPECTED_COMBINATION, playerChoice, serverChoice));
                 }
             }
             case paper -> {
@@ -161,7 +163,8 @@ public class GameController {
                     case rock ->  {
                         return playerWon;
                     }
-                    default -> throw new IllegalStateException("unexpected combination: " + playerChoice + " " + serverChoice);
+                    default -> throw new IllegalStateException(
+                            ExceptionBuilder.createMessage(UNEXPECTED_COMBINATION, playerChoice, serverChoice));
                 }
             }
             case scissors -> {
@@ -172,10 +175,12 @@ public class GameController {
                     case paper -> {
                         return playerWon;
                     }
-                    default -> throw new IllegalStateException("unexpected combination: " + playerChoice + " " + serverChoice);
+                    default -> throw new IllegalStateException(
+                            ExceptionBuilder.createMessage(UNEXPECTED_COMBINATION, playerChoice, serverChoice));
                 }
             }
-            default -> throw new IllegalStateException("unexpected value: " + playerChoice);
+            default -> throw new IllegalStateException(
+                    ExceptionBuilder.createMessage(UNEXPECTED_VALUES, playerChoice));
         }
     }
 
