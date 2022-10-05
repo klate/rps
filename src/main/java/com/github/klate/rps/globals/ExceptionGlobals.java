@@ -14,4 +14,6 @@ public class ExceptionGlobals {
 
     public static final String SENT = "sent: ";
 
+    public static final String ERROR_SAVING_GAME_RESULT = "error saving game result";
+
 }

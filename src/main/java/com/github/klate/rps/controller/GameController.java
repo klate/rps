@@ -2,7 +2,10 @@ package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
 import com.github.klate.rps.exception.ExceptionBuilder;
+import com.github.klate.rps.exception.GlobalExceptionHandler;
 import com.github.klate.rps.service.GameResultService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +29,16 @@ import static java.lang.Character.toLowerCase;
 @RequestMapping("/api")
 public class GameController {
 
+    // the logger for this class
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     // the background service for handling the game results
     private final GameResultService gameResultService;
 
+    /**
+     * Constructs a new GameController
+     * @param gameResultService the service for accessing the game result data
+     * */
     public GameController(GameResultService gameResultService) {
         this.gameResultService = gameResultService;
     }
@@ -36,16 +46,18 @@ public class GameController {
     /**
     * spring endpoint towards the user to play the game rock paper scissors
     * @param username: the name of the player playing
-    * @param playerChoice the choice (rock, paper, scirros)
+    * @param playerChoice the choice ([r]ock, [p]aper, [s]cissors)
     *
-    * @throws -> todo: check how spring handles this
+    * @throws InvalidParameterException when the playerChoice is incorrect
+    * @throws IllegalStateException when an undefined state occurred
     *
     * @return GameResult-obj, that contains the information about the result of the game
     * */
     @GetMapping("/play")
     @Async
     public CompletableFuture<GameResult> play(
-        @RequestParam(value = "name") final String username, @RequestParam(value = "c") final Character playerChoice)
+        @RequestParam(value = "name") final String username,
+        @RequestParam(value = "c") final Character playerChoice)
         throws InvalidParameterException, IllegalStateException {
 
         CompletableFuture<GameResult> gameResultCompletableFuture = CompletableFuture
@@ -64,8 +76,8 @@ public class GameController {
                 return gameResult;
             });
 
-        // save game result in background
-        gameResultCompletableFuture.thenAccept(this.gameResultService::saveGameResult);
+        // save game result -> don't wait for it
+        this.saveGameResultAsync(gameResultCompletableFuture);
 
         return gameResultCompletableFuture;
     }
@@ -82,7 +94,7 @@ public class GameController {
             userInput = toLowerCase(userInput);
         }
 
-        for (char validChoice : validChoices) {
+        for (final char validChoice : validChoices) {
             if (validChoice == userInput) {
                 return userInput;
             }
@@ -177,7 +189,19 @@ public class GameController {
         }
     }
 
-
+    /**
+     * saves the given game result future asynchronously
+     * @param gameResultFuture a future, that will contain the game result
+     * */
+    private void saveGameResultAsync(CompletableFuture<GameResult> gameResultFuture){
+        CompletableFuture.runAsync(() -> {
+            try {
+                this.gameResultService.saveGameResult(gameResultFuture.get());
+            } catch (Exception gameSaveException) {
+                logger.error(ERROR_SAVING_GAME_RESULT, gameSaveException);
+            }
+        });
+    }
 
 
 }
