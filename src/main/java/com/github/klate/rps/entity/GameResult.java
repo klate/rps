@@ -1,6 +1,10 @@
 package com.github.klate.rps.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.util.Date;
+import java.util.UUID;
 import javax.persistence.*;
 
 /**
@@ -10,10 +14,9 @@ import javax.persistence.*;
 @Table(name = "GAME_RESULTS")
 public class GameResult {
 
-    // TODO: Use UUID
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @Column(name = "id", nullable = false)
+    private final UUID id;
     private char winner;
     private final String userName;
     private final Date date;
@@ -25,9 +28,10 @@ public class GameResult {
      * empty constructor with dummy values
      * */
     protected GameResult() {
+        this.id = null;
         this.playerChoice = ' ';
-        this.date = null;
         this.userName = null;
+        this.date = null;
     }
 
     /**
@@ -37,6 +41,7 @@ public class GameResult {
      * @param playerChoice the choice in the game of the player
      * */
     public GameResult(String userName, char playerChoice) {
+        this.id = UUID.randomUUID();
         this.date = new Date();
         this.userName = userName;
         this.playerChoice = playerChoice;
@@ -50,7 +55,7 @@ public class GameResult {
         this.winner = winner;
     }
 
-    public long getId(){
+    public UUID getId(){
         return this.id;
     }
 
