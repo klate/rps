@@ -2,8 +2,6 @@ package com.github.klate.rps.globals;
 
 public class ExceptionGlobals {
 
-    // TODO: init on JVM string pool
-
     public static final String UNEXPECTED_COMBINATION = "unexpected combination: ";
 
     public static final String UNEXPECTED_VALUES = "unexpected values: ";
