@@ -4,11 +4,12 @@ import com.github.klate.rps.entity.GameResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Java Persistance Api repository, that contains the game results (GameResult)
  * */
-public interface GameResultRepository extends JpaRepository<GameResult, Integer> {
+public interface GameResultRepository extends JpaRepository<GameResult, UUID> {
 
     /**
     * fetches all the game results, that were played by the given user

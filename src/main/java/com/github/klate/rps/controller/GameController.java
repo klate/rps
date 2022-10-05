@@ -141,10 +141,10 @@ public class GameController {
         }
 
         // TODO: check: is there a more elegant way?
-        // -> if there is: make multiple versions of this method avalible via dependecy injection
+        // -> if there is: make multiple versions of this method available via dependency injection
         // -> configurable via v1/v2/vX api routes?
         // -> maybe with relations? -> rock ==> scissors ==> paper ==> rock;
-        // from left to right is the winner -> check whoose left index is clear?
+        // from left to right is the winner -> check whose left index is clear?
 
 
         switch (playerChoice) {

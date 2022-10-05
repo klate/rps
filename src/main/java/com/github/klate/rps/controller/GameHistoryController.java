@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -41,7 +42,7 @@ public class GameHistoryController {
      * @return a future, that contains the game result with the given id
      * */
     @GetMapping("/{id}")
-    public CompletableFuture<GameResult> getGameResultById(@PathVariable int id) throws EntityNotFoundException {
+    public CompletableFuture<GameResult> getGameResultById(@PathVariable UUID id) throws EntityNotFoundException {
         return this.gameResultService.getGameResultById(id);
     }
 

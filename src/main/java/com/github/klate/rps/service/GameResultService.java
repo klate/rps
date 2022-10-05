@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -54,7 +55,7 @@ public class GameResultService {
      * @throws EntityNotFoundException when the id was not found
      * */
     @Async
-    public CompletableFuture<GameResult> getGameResultById(int id) throws EntityNotFoundException {
+    public CompletableFuture<GameResult> getGameResultById(UUID id) throws EntityNotFoundException {
         Optional<GameResult> result = this.gameResultRepository.findById(id);
 
         if(result.isEmpty())
