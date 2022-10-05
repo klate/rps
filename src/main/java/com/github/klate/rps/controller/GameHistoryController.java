@@ -62,7 +62,6 @@ public class GameHistoryController {
      * */
     @GetMapping("/winner/{winner}")
     public CompletableFuture<List<GameResult>> getGameResultsByWinner(@PathVariable char winner) throws EntityNotFoundException {
-        // todo: check input
         return this.gameResultService.getGameResultsByWinner(winner);
     }
 }

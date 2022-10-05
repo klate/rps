@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidParameterException.class)
     String invalidParameterHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
-        // logger.error(ex.getMessage(), ex);
+        logger.error(ex.getMessage(), ex);
         return ex.getMessage();
     }
 
