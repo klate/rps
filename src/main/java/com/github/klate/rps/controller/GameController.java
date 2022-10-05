@@ -2,21 +2,21 @@ package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
 import com.github.klate.rps.exception.ExceptionBuilder;
-import com.github.klate.rps.globals.ExceptionGlobals;
 import com.github.klate.rps.service.GameResultService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.InvalidParameterException;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.klate.rps.globals.ExceptionGlobals.*;
 import static com.github.klate.rps.globals.GameGlobals.*;
-import static java.lang.Character.*;
+import static java.lang.Character.isUpperCase;
+import static java.lang.Character.toLowerCase;
 
 /**
 * Controller for the server-side game logic of the server
@@ -35,7 +35,7 @@ public class GameController {
 
     /**
     * spring endpoint towards the user to play the game rock paper scissors
-    * @param name: the name of the player playing
+    * @param username: the name of the player playing
     * @param playerChoice the choice (rock, paper, scirros)
     *
     * @throws -> todo: check how spring handles this
@@ -43,37 +43,31 @@ public class GameController {
     * @return GameResult-obj, that contains the information about the result of the game
     * */
     @GetMapping("/play")
+    @Async
     public CompletableFuture<GameResult> play(
-        @RequestParam(value = "name") String name, @RequestParam(value = "c") char playerChoice)
+        @RequestParam(value = "name") final String username, @RequestParam(value = "c") final Character playerChoice)
         throws InvalidParameterException, IllegalStateException {
 
-        // TODO: make the game processing logic also async
-        // non blocking for the main thread
+        CompletableFuture<GameResult> gameResultCompletableFuture = CompletableFuture
+            // 1. check the user input
+            .supplyAsync(() -> checkChoiceInput(playerChoice))
+            // 2. create the response obj
+            .thenApply(pChoice -> new GameResult(username, pChoice))
+            // 3. get server choice
+            .thenApply((gameResult) -> {
+                gameResult.setServerChoice(GameController.getServerChoice());
+                return gameResult;
+            })
+            // 4. determine the winner
+            .thenApply((gameResult) -> {
+                gameResult.setWinner(getWinner(gameResult.getPlayerChoice(), gameResult.getServerChoice()));
+                return gameResult;
+            });
 
-        // execution order
-        // 1. checkChoiceInput
-        // 2. getServerChoice
-        // 3. getWinner
-        // 4. create game result obj
-        // 5. saveGameResult -> do not wait -> async
-        // return game result
+        // save game result in background
+        gameResultCompletableFuture.thenAccept(this.gameResultService::saveGameResult);
 
-
-
-        playerChoice = checkChoiceInput(playerChoice);
-
-        final char serverChoice = getServerChoice();
-        final char winner = getWinner(playerChoice, serverChoice);
-
-        // TODO: add exceptoinhandling and translate them to HTTP Codes
-
-        // todo: maybe to heap alloc of properties on other thread and then just use the objects here
-        //  -> less heap allocations in response time
-        final GameResult resultObj = new GameResult(winner, name, playerChoice, serverChoice);
-
-        this.gameResultService.saveGameResult(resultObj);
-
-        return CompletableFuture.completedFuture(resultObj);
+        return gameResultCompletableFuture;
     }
 
     /**
@@ -105,7 +99,6 @@ public class GameController {
      * @return the server choice
      * */
     private static char getServerChoice(){
-        // todo check for heap allocations on ThreadLocalRandom.current()
         switch (ThreadLocalRandom.current().nextInt(3)) {
             case 0 -> {
                 return rock;

@@ -32,10 +32,9 @@ public class GameResultService {
      * @return a future with the saved object
      * */
     @Async
-    public CompletableFuture<GameResult> saveGameResult(GameResult result){
-        // TODO: check if this is really non blocking
-        result = gameResultRepository.save(result);
-        return CompletableFuture.completedFuture(result);
+    public CompletableFuture<Void> saveGameResult(GameResult result){
+        gameResultRepository.save(result);
+        return CompletableFuture.completedFuture(null);
     }
 
     /**

@@ -11,24 +11,21 @@ import javax.persistence.*;
 public class GameResult {
 
     // TODO: Use UUID
-    // TODO: check if pre-generation of objects is possible -> reduces heap allocations
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private final char winner;
+    private char winner;
     private final String userName;
     private final Date date;
     private final char playerChoice;
-    private final char computerChoice;
+    private char serverChoice;
 
     /**
      * required by JPI
      * empty constructor with dummy values
      * */
     protected GameResult() {
-        //throw new IllegalStateException("");
-        // TODO: check -> is the exception a good way of replacing the following 3 lines
-        this.winner = this.playerChoice = this.computerChoice = ' ';
+        this.playerChoice = ' ';
         this.date = null;
         this.userName = null;
     }
@@ -36,21 +33,21 @@ public class GameResult {
     /**
      * creates a new instance, sets the current date and creates a new uuid
      *
-     * @param winner the winner of the match
-     * @param username the username of the player
+     * @param userName the username of the player
      * @param playerChoice the choice in the game of the player
-     * @param serverChoice the choice in the game of the server
      * */
-    public GameResult(char winner, String username, char playerChoice, char serverChoice){
+    public GameResult(String userName, char playerChoice) {
         this.date = new Date();
-        this.winner = winner;
-        this.userName = username;
+        this.userName = userName;
         this.playerChoice = playerChoice;
-        this.computerChoice = serverChoice;
     }
 
     public char getWinner(){
         return this.winner;
+    }
+
+    public void setWinner(char winner){
+        this.winner = winner;
     }
 
     public long getId(){
@@ -69,7 +66,11 @@ public class GameResult {
         return this.playerChoice;
     }
 
-    public char getComputerChoice() {
-        return this.computerChoice;
+    public char getServerChoice() {
+        return this.serverChoice;
+    }
+
+    public void setServerChoice(char serverChoice){
+        this.serverChoice = serverChoice;
     }
 }
