@@ -19,6 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.github.klate.rps.globals.ExceptionGlobals.*;
 import static com.github.klate.rps.globals.GameGlobals.*;
 import static com.github.klate.rps.util.ArrayUtils.getIndexInArray;
+import static com.github.klate.rps.util.ArrayUtils.getIndexInArrayVector;
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
 
@@ -73,7 +74,11 @@ public class GameController {
                 })
                 // 4. determine the winner
                 .thenApply((gameResult) -> {
-                    gameResult.setWinner(getWinner(gameResult.getPlayerChoice(), gameResult.getServerChoice()));
+                    try {
+                        gameResult.setWinner(getWinner(gameResult.getPlayerChoice(), gameResult.getServerChoice()));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     return gameResult;
                 });
 
@@ -134,12 +139,13 @@ public class GameController {
      * @param playerChoice the choice of the place
      * @param serverChoice the choice of the server
      */
-    private static char getWinner(char playerChoice, char serverChoice) {
+    private static char getWinner(char playerChoice, char serverChoice) throws Exception {
         if (playerChoice == serverChoice){
             return draw;
         }
 
-        final int diff = getIndexInArray(gameChoices, playerChoice) - getIndexInArray(gameChoices, serverChoice);
+        final int diff = getIndexInArrayVector(gameChoicesShort, (short)playerChoice)
+                - getIndexInArrayVector(gameChoicesShort, (short)serverChoice);
 
         if(diff % 2 == 0) {
             // even

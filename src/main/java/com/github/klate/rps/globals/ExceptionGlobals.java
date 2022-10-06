@@ -10,4 +10,6 @@ public class ExceptionGlobals {
 
     public static final String ERROR_SAVING_GAME_RESULT = "error saving game result";
 
+    public static final String VALUE_NOT_FOUND_ARRAY = "value not found in array";
+
 }
