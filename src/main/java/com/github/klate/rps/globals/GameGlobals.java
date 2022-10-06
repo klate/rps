@@ -6,24 +6,10 @@ package com.github.klate.rps.globals;
 public class GameGlobals {
 
     /**
-    * Char value for the game choice "rock"
-    * */
-    public static final char rock = 'r';
-
-    /**
-     * Char value for the game choice "paper"
-     * */
-    public static final char paper = 'p';
-
-    /**
-     * Char value for the game choice "scissors"
-     * */
-    public static final char scissors = 's';
-
-    /**
      * Char-array, that contains all the valid options for a player to choose
+     * the order of the elements defines what beats what. must be an uneven number > 2
      * */
-    public static final char[] validChoices = new char[] { rock, paper, scissors };
+    public static final char[] gameChoices = new char[] { 'r', 'p', 's' };
 
     /**
      * Char value for the game result "draw"

@@ -18,6 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static com.github.klate.rps.globals.ExceptionGlobals.*;
 import static com.github.klate.rps.globals.GameGlobals.*;
+import static com.github.klate.rps.util.ArrayUtils.getIndexInArray;
 import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
 
@@ -37,44 +38,44 @@ public class GameController {
 
     /**
      * Constructs a new GameController
+     *
      * @param gameResultService the service for accessing the game result data
-     * */
+     */
     public GameController(GameResultService gameResultService) {
         this.gameResultService = gameResultService;
     }
 
     /**
-    * spring endpoint towards the user to play the game rock paper scissors
-    * @param username: the name of the player playing
-    * @param playerChoice the choice ([r]ock, [p]aper, [s]cissors)
-    *
-    * @throws InvalidParameterException when the playerChoice is incorrect
-    * @throws IllegalStateException when an undefined state occurred
-    *
-    * @return GameResult-obj, that contains the information about the result of the game
-    * */
+     * spring endpoint towards the user to play the game rock paper scissors
+     *
+     * @param username:    the name of the player playing
+     * @param playerChoice the choice ([r]ock, [p]aper, [s]cissors)
+     * @return GameResult-obj, that contains the information about the result of the game
+     * @throws InvalidParameterException when the playerChoice is incorrect
+     * @throws IllegalStateException     when an undefined state occurred
+     */
     @GetMapping("/play")
     @Async
     public CompletableFuture<GameResult> play(
-        @RequestParam(value = "name") final String username,
-        @RequestParam(value = "c") final Character playerChoice)
-        throws InvalidParameterException, IllegalStateException {
+            @RequestParam(value = "name") final String username,
+            @RequestParam(value = "c") final Character playerChoice)
+            throws InvalidParameterException, IllegalStateException {
 
         CompletableFuture<GameResult> gameResultCompletableFuture = CompletableFuture
-            // 1. check the user input
-            .supplyAsync(() -> checkChoiceInput(playerChoice))
-            // 2. create the response obj
-            .thenApply(pChoice -> new GameResult(username, pChoice))
-            // 3. get server choice
-            .thenApply((gameResult) -> {
-                gameResult.setServerChoice(GameController.getServerChoice());
-                return gameResult;
-            })
-            // 4. determine the winner
-            .thenApply((gameResult) -> {
-                gameResult.setWinner(getWinner(gameResult.getPlayerChoice(), gameResult.getServerChoice()));
-                return gameResult;
-            });
+                // 1. check the user input
+                .supplyAsync(() -> checkChoiceInput(playerChoice))
+                // 2. create the response obj
+                .thenApply(pChoice -> new GameResult(username, pChoice))
+                // 3. get server choice
+                .thenApply((gameResult) -> {
+                    gameResult.setServerChoice(GameController.getServerChoice());
+                    return gameResult;
+                })
+                // 4. determine the winner
+                .thenApply((gameResult) -> {
+                    gameResult.setWinner(getWinner(gameResult.getPlayerChoice(), gameResult.getServerChoice()));
+                    return gameResult;
+                });
 
         // save game result -> don't wait for it
         this.saveGameResultAsync(gameResultCompletableFuture);
@@ -84,116 +85,40 @@ public class GameController {
 
     /**
      * checks if the given input is one of the valid choices
-     * @see validChoices valid choices
      *
      * @param userInput the user input choice to check
      * @throws InvalidParameterException when the input is not one of the valid choices
-     * */
+     */
     private static char checkChoiceInput(char userInput) throws InvalidParameterException {
-        if (isUpperCase(userInput)){
+        if (isUpperCase(userInput)) {
             userInput = toLowerCase(userInput);
         }
 
-        for (final char validChoice : validChoices) {
+        for (final char validChoice : gameChoices) {
             if (validChoice == userInput) {
                 return userInput;
             }
         }
 
         throw new InvalidParameterException(
-                ExceptionBuilder.createMessage(ACCEPTED_INPUTS, validChoices, SENT, userInput));
+                ExceptionBuilder.createMessage(ACCEPTED_INPUTS, gameChoices, SENT, userInput));
     }
 
     /**
      * returns a randomly generated server choice for the game
-     * @see validChoices available choices
      *
      * @return the server choice
-     * */
-    private static char getServerChoice(){
-        switch (ThreadLocalRandom.current().nextInt(3)) {
-            case 0 -> {
-                return rock;
-            }
-            case 1 -> {
-                return paper;
-            }
-            case 2 -> {
-                return scissors;
-            }
-            default -> throw new IllegalStateException(UNKNOWN_SERVER_CHOICE);
-        }
-    }
-
-    /**
-     * determines the winner of the game from the given input
-     *
-     * @see validChoices for the valid choices of player and server
-     *
-     * @param playerChoice the choice of the place
-     * @param serverChoice the choice of the server
-     *
-     * @throws IllegalStateException for unexpected combinations
-     * */
-    private static char getWinner(char playerChoice, char serverChoice) throws IllegalStateException {
-        if (playerChoice == serverChoice){
-            return draw;
-        }
-
-        // TODO: check: is there a more elegant way?
-        // -> if there is: make multiple versions of this method available via dependency injection
-        // -> configurable via v1/v2/vX api routes?
-        // -> maybe with relations? -> rock ==> scissors ==> paper ==> rock;
-        // from left to right is the winner -> check whose left index is clear?
-
-
-        switch (playerChoice) {
-            case rock -> {
-                switch (serverChoice) {
-                    case paper -> {
-                        return serverWon;
-                    }
-                    case scissors -> {
-                        return playerWon;
-                    }
-                    default -> throw new IllegalStateException(
-                            ExceptionBuilder.createMessage(UNEXPECTED_COMBINATION, playerChoice, serverChoice));
-                }
-            }
-            case paper -> {
-                switch (serverChoice) {
-                    case scissors -> {
-                        return serverWon;
-                    }
-                    case rock ->  {
-                        return playerWon;
-                    }
-                    default -> throw new IllegalStateException(
-                            ExceptionBuilder.createMessage(UNEXPECTED_COMBINATION, playerChoice, serverChoice));
-                }
-            }
-            case scissors -> {
-                switch (serverChoice){
-                    case rock -> {
-                        return serverWon;
-                    }
-                    case paper -> {
-                        return playerWon;
-                    }
-                    default -> throw new IllegalStateException(
-                            ExceptionBuilder.createMessage(UNEXPECTED_COMBINATION, playerChoice, serverChoice));
-                }
-            }
-            default -> throw new IllegalStateException(
-                    ExceptionBuilder.createMessage(UNEXPECTED_VALUES, playerChoice));
-        }
+     */
+    private static char getServerChoice() {
+        return gameChoices[ThreadLocalRandom.current().nextInt(gameChoices.length)];
     }
 
     /**
      * saves the given game result future asynchronously
+     *
      * @param gameResultFuture a future, that will contain the game result
-     * */
-    private void saveGameResultAsync(CompletableFuture<GameResult> gameResultFuture){
+     */
+    private void saveGameResultAsync(CompletableFuture<GameResult> gameResultFuture) {
         CompletableFuture.runAsync(() -> {
             try {
                 this.gameResultService.saveGameResult(gameResultFuture.get());
@@ -202,6 +127,38 @@ public class GameController {
             }
         });
     }
+
+    /**
+     * determines the winner of the game from the given input
+     *
+     * @param playerChoice the choice of the place
+     * @param serverChoice the choice of the server
+     */
+    private static char getWinner(char playerChoice, char serverChoice) {
+        if (playerChoice == serverChoice){
+            return draw;
+        }
+
+        final int diff = getIndexInArray(gameChoices, playerChoice) - getIndexInArray(gameChoices, serverChoice);
+
+        if(diff % 2 == 0) {
+            // even
+            if (diff > 0) {
+                return serverWon;
+            } else {
+                return playerWon;
+            }
+        } else {
+            // uneven
+            if (diff > 0) {
+                return playerWon;
+            } else {
+                return serverWon;
+            }
+        }
+    }
+
+
 
 
 }
