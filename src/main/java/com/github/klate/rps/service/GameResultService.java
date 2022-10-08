@@ -5,12 +5,11 @@ import com.github.klate.rps.entity.GameResult;
 import com.github.klate.rps.repository.GameResultRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class GameResultService {
@@ -33,9 +32,8 @@ public class GameResultService {
      * @return a future with the saved object
      * */
     @Async
-    public CompletableFuture<Void> saveGameResult(GameResult result){
-        gameResultRepository.save(result);
-        return CompletableFuture.completedFuture(null);
+    public CompletableFuture<GameResult> create(GameResult result) throws ExecutionException, InterruptedException {
+        return gameResultRepository.save(result).toFuture();
     }
 
     /**
@@ -43,25 +41,17 @@ public class GameResultService {
      *
      * @return a future with the list of all gameResults
      * */
-    @Async
-    public CompletableFuture<List<GameResult>> getAllGameResults() {
-        return CompletableFuture.completedFuture(this.gameResultRepository.findAll());
+    public Flux<GameResult> getAllGameResults() {
+        return this.gameResultRepository.findAll();
     }
 
     /**
      * fetches a GameResult obj from the configured repository with the provided id
      *
      * @return a future with a GameResult, that is identified the provided id
-     * @throws EntityNotFoundException when the id was not found
      * */
-    @Async
-    public CompletableFuture<GameResult> getGameResultById(UUID id) throws EntityNotFoundException {
-        Optional<GameResult> result = this.gameResultRepository.findById(id);
-
-        if(result.isEmpty())
-            throw new EntityNotFoundException();
-
-        return CompletableFuture.completedFuture(result.get());
+    public Mono<GameResult> getGameResultById(String id) {
+        return this.gameResultRepository.findById(id);
     }
 
     /**
@@ -69,16 +59,9 @@ public class GameResultService {
      *
      * @param username the username
      * @return a future with a list of GameResult, that were played by the given username
-     * @throws EntityNotFoundException when the username was not found
      * */
-    @Async
-    public CompletableFuture<List<GameResult>> getGameResultsByUsername(String username) throws EntityNotFoundException {
-        List<GameResult> results = this.gameResultRepository.findByUserName(username);
-
-        if (results.isEmpty())
-            throw new EntityNotFoundException();
-
-        return CompletableFuture.completedFuture(results);
+    public Flux<GameResult> getGameResultsByUsername(String username) {
+        return this.gameResultRepository.findByUserName(username);
     }
 
     /**
@@ -86,16 +69,9 @@ public class GameResultService {
      *
      * @param winner the winner of the game
      * @return a future with a list of GameResult, that were won by the given winner
-     * @throws EntityNotFoundException when the winner was not found
      * */
-    @Async
-    public CompletableFuture<List<GameResult>> getGameResultsByWinner(char winner) throws EntityNotFoundException {
-        List<GameResult> results = this.gameResultRepository.findByWinner(winner);
-
-        if (results.isEmpty())
-            throw new EntityNotFoundException();
-
-        return CompletableFuture.completedFuture(results);
+    public Flux<GameResult> getGameResultsByWinner(char winner) {
+        return this.gameResultRepository.findByWinner(winner);
     }
 
 }

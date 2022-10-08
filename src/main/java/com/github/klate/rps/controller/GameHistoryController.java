@@ -2,18 +2,18 @@ package com.github.klate.rps.controller;
 
 import com.github.klate.rps.entity.GameResult;
 import com.github.klate.rps.service.GameResultService;
-import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
 * REST controller for the game history of the played games
 **/
 @RestController
-@RequestMapping("/api/history")
+@RequestMapping(value = "/api/history")
 public class GameHistoryController {
 
     // the background service for handling the game results
@@ -32,7 +32,7 @@ public class GameHistoryController {
      * @return a future, that contains a list of gameresults
      * */
     @GetMapping
-    public CompletableFuture<List<GameResult>> getAllGameResults() {
+    public Flux<GameResult> getAllGameResults() {
         return this.gameResultService.getAllGameResults();
     }
 
@@ -42,7 +42,7 @@ public class GameHistoryController {
      * @return a future, that contains the game result with the given id
      * */
     @GetMapping("/{id}")
-    public CompletableFuture<GameResult> getGameResultById(@PathVariable UUID id) throws EntityNotFoundException {
+    public Mono<GameResult> getGameResultById(@PathVariable String id) {
         return this.gameResultService.getGameResultById(id);
     }
 
@@ -52,7 +52,7 @@ public class GameHistoryController {
      * @return a list of GameResults, that were played by the given username
      * */
     @GetMapping("/username/{username}")
-    public CompletableFuture<List<GameResult>> getGameResultsByUsername(@PathVariable String username) throws EntityNotFoundException {
+    public Flux<GameResult> getGameResultsByUsername(@PathVariable String username) {
         return this.gameResultService.getGameResultsByUsername(username);
     }
 
@@ -62,7 +62,7 @@ public class GameHistoryController {
      * @return a list of GameResults, that were wo by the given winner
      * */
     @GetMapping("/winner/{winner}")
-    public CompletableFuture<List<GameResult>> getGameResultsByWinner(@PathVariable char winner) throws EntityNotFoundException {
+    public Flux<GameResult> getGameResultsByWinner(@PathVariable char winner) {
         return this.gameResultService.getGameResultsByWinner(winner);
     }
 }

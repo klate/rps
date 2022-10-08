@@ -1,6 +1,5 @@
 package com.github.klate.rps.exception;
 
-import com.github.klate.rps.globals.ExceptionGlobals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.InvalidParameterException;
@@ -34,18 +32,6 @@ public class GlobalExceptionHandler {
     String generalExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
         logger.error(ex.getMessage(), ex);
         return ex.getMessage();
-    }
-
-    /**
-     * handles the processing of EntityNotFoundException
-     * @return the HTTP response body for this Exception
-     * */
-    @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntityNotFoundException.class)
-    String entityNotFoundHandler(HttpServletRequest request, HttpServletResponse response, Exception ex){
-        logger.error(ex.getMessage(), ex);
-        return null;
     }
 
     /**

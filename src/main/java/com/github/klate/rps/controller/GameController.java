@@ -121,7 +121,7 @@ public class GameController {
     private void saveGameResultAsync(CompletableFuture<GameResult> gameResultFuture) {
         CompletableFuture.runAsync(() -> {
             try {
-                this.gameResultService.saveGameResult(gameResultFuture.get());
+                this.gameResultService.create(gameResultFuture.get());
             } catch (Exception gameSaveException) {
                 logger.error(ERROR_SAVING_GAME_RESULT, gameSaveException);
             }
