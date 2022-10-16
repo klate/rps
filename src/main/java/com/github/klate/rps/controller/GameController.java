@@ -7,11 +7,9 @@ import com.github.klate.rps.service.GameResultService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.security.InvalidParameterException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -57,9 +55,11 @@ public class GameController {
      */
     @GetMapping("/play")
     @Async
+    @ResponseBody
     public CompletableFuture<GameResult> play(
             @RequestParam(value = "name") final String username,
-            @RequestParam(value = "c") final Character playerChoice)
+            @RequestParam(value = "c") final Character playerChoice,
+            HttpServletResponse response)
             throws InvalidParameterException, IllegalStateException {
 
         CompletableFuture<GameResult> gameResultCompletableFuture = CompletableFuture
@@ -84,6 +84,9 @@ public class GameController {
 
         // save game result -> don't wait for it
         this.saveGameResultAsync(gameResultCompletableFuture);
+
+        // TODO: find generic way
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         return gameResultCompletableFuture;
     }
@@ -126,7 +129,7 @@ public class GameController {
     private void saveGameResultAsync(CompletableFuture<GameResult> gameResultFuture) {
         CompletableFuture.runAsync(() -> {
             try {
-                this.gameResultService.saveGameResult(gameResultFuture.get());
+                this.gameResultService.create(gameResultFuture.get());
             } catch (Exception gameSaveException) {
                 logger.error(ERROR_SAVING_GAME_RESULT, gameSaveException);
             }

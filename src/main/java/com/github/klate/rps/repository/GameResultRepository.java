@@ -1,23 +1,21 @@
 package com.github.klate.rps.repository;
 
 import com.github.klate.rps.entity.GameResult;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-import java.util.UUID;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 
 /**
  * Java Persistance Api repository, that contains the game results (GameResult)
  * */
-public interface GameResultRepository extends JpaRepository<GameResult, UUID> {
+public interface GameResultRepository extends ReactiveMongoRepository<GameResult, String> {
 
     /**
     * fetches all the game results, that were played by the given user
     * */
-    List<GameResult> findByUserName(String userName);
+    Flux<GameResult> findByUserName(String userName);
 
     /**
      * fetches all the game results, that were won by the given winner
      * */
-    List<GameResult> findByWinner(char winner);
+    Flux<GameResult> findByWinner(char winner);
 }
