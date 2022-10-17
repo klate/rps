@@ -55,6 +55,7 @@ public class GameController {
     @GetMapping("/play")
     @Async
     @ResponseBody
+    @CrossOrigin("*")
     public CompletableFuture<GameResult> play(
             @RequestParam(value = "name") final String username,
             @RequestParam(value = "c") final Character playerChoice,
@@ -79,9 +80,6 @@ public class GameController {
 
         // save game result -> don't wait for it
         this.saveGameResultAsync(gameResultCompletableFuture);
-
-        // TODO: find generic way
-        response.setHeader("Access-Control-Allow-Origin", "*");
 
         return gameResultCompletableFuture;
     }

@@ -1,24 +1,32 @@
 package com.github.klate.rps.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @Configuration
 @EnableAsync
-public class AsyncConfig {
+public class AsyncConfig implements AsyncConfigurer {
 
     @Bean
-    public Executor taskExecutor(){
-        ThreadPoolTaskExecutor ex = new ThreadPoolTaskExecutor();
-        ex.setCorePoolSize(2);
-        ex.setMaxPoolSize(2);
-        ex.setQueueCapacity(500);
-        ex.initialize();
-        return ex;
+    protected WebMvcConfigurer webMvcConfigurer(){
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+                configurer.setTaskExecutor(getTaskExecutor());
+            }
+        };
     }
 
+    protected ConcurrentTaskExecutor getTaskExecutor() {
+        return new ConcurrentTaskExecutor(Executors.newFixedThreadPool(5));
+    }
 }
