@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+import static com.github.klate.rps.globals.ExceptionGlobals.ERROR_WRONG_USERNAME;
+
 
 /**
 * class, that contains all the information of a played game between the server and a player
@@ -38,9 +40,13 @@ public class GameResult {
      * @param playerChoice the choice in the game of the player
      * */
     public GameResult(String userName, char playerChoice) {
-        this.date = new Date();
-        this.userName = userName;
-        this.playerChoice = playerChoice;
+        if(userName != null && !userName.isEmpty() && !userName.isBlank()){
+            this.date = new Date();
+            this.userName = userName;
+            this.playerChoice = playerChoice;
+        } else {
+            throw new IllegalArgumentException(ERROR_WRONG_USERNAME);
+        }
     }
 
 }
